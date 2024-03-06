@@ -31,7 +31,7 @@ public class CartItemServiceImplementation implements CartItemService{
         cartItem.setQuantity(1);
         cartItem.setPrice(cartItem.getProduct().getPrice()*cartItem.getQuantity());
         cartItem.setDiscountedPrice(cartItem.getProduct().getDiscountedPrice()*cartItem.getQuantity());
-        CartItem createdCartItem=cartItemRepository.save(cartItem);
+        CartItem createdCartItem=(CartItem)this.cartItemRepository.save(cartItem);
 
         return createdCartItem;
     }
@@ -45,8 +45,9 @@ public class CartItemServiceImplementation implements CartItemService{
             item.setQuantity((cartItem.getQuantity()));
             item.setPrice(item.getQuantity()*item.getProduct().getPrice());
             item.setDiscountedPrice(item.getProduct().getDiscountedPrice()*item.getQuantity());
-        }
-        return cartItemRepository.save(item);
+            return (CartItem)this.cartItemRepository.save(item);
+        }else
+            throw new CartItemException("You can't update  another users cart_item");
     }
 
     @Override
@@ -57,11 +58,12 @@ public class CartItemServiceImplementation implements CartItemService{
 
     @Override
     public void removeCartItem(Long userId, Long cartItemId) throws CartItemException, UserException {
-        CartItem cartItem=findCartItemById(cartItemId);
-        User user=userService.findUserById(cartItem.getUserId());
-        User reqUser=userService.findUserById(userId);
+        System.out.println("userId- " + userId + " cartItemId " + cartItemId);
+        CartItem cartItem=this.findCartItemById(cartItemId);
+        User user=this.userService.findUserById(cartItem.getUserId());
+        User reqUser=this.userService.findUserById(userId);
         if (user.getId().equals(reqUser.getId())) {
-            cartItemRepository.deleteById(cartItemId);
+            this.cartItemRepository.deleteById(cartItemId);
         }else {
             throw new UserException("You Cant Remove Another Users Item");
         }
@@ -69,10 +71,10 @@ public class CartItemServiceImplementation implements CartItemService{
 
     @Override
     public CartItem findCartItemById(Long cartItemId) throws CartItemException {
-        Optional<CartItem> opt=cartItemRepository.findById(cartItemId);
+        Optional<CartItem> opt=this.cartItemRepository.findById(cartItemId);
         if (opt.isPresent()){
-            return opt.get();
+            return (CartItem) opt.get();
         }
-        throw new CartItemException("Cart Item Not Found With ID");
+        throw new CartItemException("Cart Item Not Found With ID:" +cartItemId);
     }
 }
