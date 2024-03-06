@@ -170,6 +170,11 @@ public class ProductServiceImplementation implements  ProductService{
     }
 
     @Override
+    public List<Product> searchProduct(String query) {
+        return null;
+    }
+
+    @Override
     public List<Product> findProductByCategory(String category) {
         return null;
 
@@ -180,7 +185,7 @@ public class ProductServiceImplementation implements  ProductService{
         Pageable pageable= PageRequest.of(pageNumber,pageSize);
 
         List<Product> products=productRepository.filterProducts(category,minPrice,maxPrice, String.valueOf(minDiscount),sort);
-        if (colors.isEmpty()){
+        if (!colors.isEmpty()){
             products=products.stream().filter(p-> colors.stream().anyMatch(c->c.equalsIgnoreCase(p.getColor())))
                     .collect(Collectors.toList());
         } else if

@@ -20,6 +20,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     )
 
 
+
     public List<Product>filterProducts(@Param("category") String category,
                                        @Param("minPrice") Integer minPrice,
                                        @Param("minPrice") Integer minDiscount,
