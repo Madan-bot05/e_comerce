@@ -38,39 +38,42 @@ public class ProductServiceImplementation implements  ProductService{
     public Product createProduct(CreateProductRequest req) {
 
 //        1st level
-//        Category topLevel=categoryRepository.findByName(req.getTopLavelCategory());
+//        Category topLevel=categoryRepository.findByName(req.getTopLevelCategory());
 //
 //        if(topLevel==null) {
 //
 //            Category topLavelCategory=new Category();
-//            topLavelCategory.setName(req.getTopLavelCategory());
+//            topLavelCategory.setName(req.getTopLevelCategory());
 //            topLavelCategory.setLevel(1);
 //
 //            topLevel= categoryRepository.save(topLavelCategory);
 //        }
 //
 //        Category secondLevel=categoryRepository.
-//                findByNameAndParent(req.getSecondLavelCategory(),topLevel.getName());
+//                findByNameAndParent(req.getSecondLevelCategory(),topLevel.getName());
 //        if(secondLevel==null) {
 //
 //            Category secondLavelCategory=new Category();
-//            secondLavelCategory.setName(req.getSecondLavelCategory());
+//            secondLavelCategory.setName(req.getSecondLevelCategory());
 //            secondLavelCategory.setParentCategory(topLevel);
 //            secondLavelCategory.setLevel(2);
 //
 //            secondLevel= categoryRepository.save(secondLavelCategory);
 //        }
 //
-//        Category thirdLevel=categoryRepository.findByNameAndParent(req.getThirdLavelCategory(),secondLevel.getName());
+//        Category thirdLevel=categoryRepository.findByNameAndParent(req.getThirdLevelCategory(),secondLevel.getName());
 //        if(thirdLevel==null) {
 //
 //            Category thirdLavelCategory=new Category();
-//            thirdLavelCategory.setName(req.getThirdLavelCategory());
+//            thirdLavelCategory.setName(req.getThirdLevelCategory());
 //            thirdLavelCategory.setParentCategory(secondLevel);
 //            thirdLavelCategory.setLevel(3);
 //
 //            thirdLevel=categoryRepository.save(thirdLavelCategory);
 //        }
+
+
+
 
 //        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
 //
@@ -115,8 +118,9 @@ public class ProductServiceImplementation implements  ProductService{
         product.setSizes(req.getSize());
         product.setImageUrl(req.getImageUrl());
         product.setQuantity(req.getQuantity());
-//        product.setCategory( topLevel);
-//        product.setCategory( secondLevel);
+        product.setCategory( req.getTopLevelCategory());
+        product.setCategory(req.getSecondLevelCategory());
+        product.setCategory(req.getThirdLevelCategory());
 //        product.setCategory( thirdLevel);
 //        product.setCategory(topLevel); // Set the top level category
 //        product.setCategory(secondLevel); // Set the second level category
