@@ -1,33 +1,76 @@
 package com.example.e_comerce.model;
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
 
-import jakarta.persistence.*;
+
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "categories")
+@Table(
+        name = "categories"
+)
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(
+            strategy = GenerationType.AUTO
+    )
     private Long id;
-
-
-    @NotNull(message = "Name must not be null")
-    @Size(max=50, message = "Name must be at most 50 characters")
-    private String name;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_category_id")
-    private  Category parentCategory;
+    private @NotNull @Size(
+            max = 50
+    ) String name;
+    @ManyToOne(
+            fetch = FetchType.EAGER
+    )
+    @JoinColumn(
+            name = "parent_category_id"
+    )
+    private Category parentCategory;
     private int level;
 
+    public Category() {
+    }
+
+    public int getLevel() {
+        return this.level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Category getParentCategory() {
+        return this.parentCategory;
+    }
+
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
+    }
 }

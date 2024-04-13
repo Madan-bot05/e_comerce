@@ -63,6 +63,6 @@ public class Product {
     private LocalDateTime createdAt;
 
 
-    public void setCategory(String topLevelCategory) {
-    }
+//    public void setCategory(String topLevelCategory) {
+//    }
 }

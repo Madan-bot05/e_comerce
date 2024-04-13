@@ -75,36 +75,62 @@ public class ProductServiceImplementation implements  ProductService{
 
 
 
-        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
+//        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
+//        if (topLevel == null) {
+//            topLevel = new Category();
+//            topLevel.setName(req.getTopLevelCategory());
+//            topLevel.setLevel(1);
+//
+//            topLevel = categoryRepository.save(topLevel);
+//        }
+//
+//        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), String.valueOf(topLevel));
+//        if (secondLevel == null) {
+//            secondLevel = new Category();
+//            secondLevel.setName(req.getSecondLevelCategory());
+//            secondLevel.setParentCategory(topLevel);
+//            secondLevel.setLevel(2);
+//
+//            secondLevel = categoryRepository.save(secondLevel);
+//        }
+//
+//        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), String.valueOf(secondLevel));
+//        if (thirdLevel == null) {
+//            thirdLevel = new Category();
+//            thirdLevel.setName(req.getThirdLevelCategory());
+//            thirdLevel.setParentCategory(secondLevel);
+//            thirdLevel.setLevel(3);
+//
+//            thirdLevel = categoryRepository.save(thirdLevel);
+//        }
 
+        Category topLevel = this.categoryRepository.findByName(req.getTopLevelCategory());
+        Category secondLevel;
         if (topLevel == null) {
-            topLevel = new Category();
-            topLevel.setName(req.getTopLevelCategory());
-            topLevel.setLevel(1);
-
-            topLevel = categoryRepository.save(topLevel);
-        }
-
-        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), String.valueOf(topLevel));
-        if (secondLevel == null) {
             secondLevel = new Category();
-            secondLevel.setName(req.getSecondLevelCategory());
-            secondLevel.setParentCategory(topLevel);
-            secondLevel.setLevel(2);
-
-            secondLevel = categoryRepository.save(secondLevel);
+            secondLevel.setName(req.getTopLevelCategory());
+            secondLevel.setLevel(1);
+            topLevel = (Category)this.categoryRepository.save(secondLevel);
         }
 
-        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), String.valueOf(secondLevel));
-        if (thirdLevel == null) {
+        secondLevel = this.categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
+        Category thirdLevel;
+        if (secondLevel == null) {
             thirdLevel = new Category();
-            thirdLevel.setName(req.getThirdLevelCategory());
-            thirdLevel.setParentCategory(secondLevel);
-            thirdLevel.setLevel(3);
-
-            thirdLevel = categoryRepository.save(thirdLevel);
+            thirdLevel.setName(req.getSecondLevelCategory());
+            thirdLevel.setParentCategory(topLevel);
+            thirdLevel.setLevel(2);
+            secondLevel = (Category)this.categoryRepository.save(thirdLevel);
         }
 
+        thirdLevel = this.categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
+        if (thirdLevel == null) {
+            Category thirdLavelCategory = new Category();
+            thirdLavelCategory.setName(req.getThirdLevelCategory());
+            thirdLavelCategory.setParentCategory(secondLevel);
+            thirdLavelCategory.setLevel(3);
+            thirdLevel = (Category)this.categoryRepository.save(thirdLavelCategory);
+        }
 
 
         Product product=new Product();
@@ -118,17 +144,20 @@ public class ProductServiceImplementation implements  ProductService{
         product.setSizes(req.getSize());
         product.setImageUrl(req.getImageUrl());
         product.setQuantity(req.getQuantity());
-        product.setCategory( req.getTopLevelCategory());
-        product.setCategory(req.getSecondLevelCategory());
-        product.setCategory(req.getThirdLevelCategory());
+//        product.setCategory( req.getTopLevelCategory());
+//        product.setCategory(req.getSecondLevelCategory());
+//        product.setCategory(req.getThirdLevelCategory());
 //        product.setCategory( thirdLevel);
 //        product.setCategory(String.valueOf(topLevel)); // Set the top level category
 //        product.setCategory(String.valueOf(secondLevel)); // Set the second level category
 //        product.setCategory(String.valueOf(thirdLevel)); // Set the third level category
+
         product.setCreatedAt(LocalDateTime.now());
 
 
-        Product savedProduct=productRepository.save(product);
+
+//        Product savedProduct=productRepository.save(product);
+        Product savedProduct = (Product) this.productRepository.save(product);
         System.out.println("products - "+product);
         return  savedProduct;
     }
