@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class PaymentController {
-    @Value("{razorpay.api.key}")
+    @Value("${razorpay.api.key}")
     String apiKey;
 
-    @Value("{razorpay.api.secret}")
+    @Value("${razorpay.api.secret}")
     String apiSecret;
     @Autowired
     private OrderService orderService;
@@ -34,8 +34,8 @@ public class PaymentController {
     private OrderRepository orderRepository;
 
     @PostMapping("/payments/{orderId}")
-    public ResponseEntity<PaymenyLinkResponse> createPaymentLimk(@PathVariable Long orderid, @RequestHeader("Authorization") String jwt) throws OrderException, RazorpayException {
-        Order order=orderService.findOrderById(orderid);
+    public ResponseEntity<PaymenyLinkResponse> createPaymentLink(@PathVariable Long orderId, @RequestHeader("Authorization") String jwt) throws OrderException, RazorpayException {
+        Order order=orderService.findOrderById(orderId);
         try {
             RazorpayClient razorpay=new RazorpayClient(apiKey, apiSecret);
 
@@ -53,8 +53,8 @@ public class PaymentController {
             notify.put("email",true);
             paymentLinkRequest.put("notify",notify);
 
-            paymentLinkRequest.put("callback_url","http://localhost:3000/payment/"+orderid);
-            paymentLinkRequest.put("callback_methord","get");
+            paymentLinkRequest.put("callback_url","http://localhost:3000/payment/"+orderId);
+            paymentLinkRequest.put("callback_method","get");
 
             PaymentLink payment=razorpay.paymentLink.create(paymentLinkRequest);
 
@@ -67,7 +67,7 @@ public class PaymentController {
 
             return  new ResponseEntity<PaymenyLinkResponse>(res, HttpStatus.CREATED);
 
-        } catch (Exception e) {
+        } catch (RazorpayException e) {
             throw new RazorpayException(e.getMessage());
         }
 
