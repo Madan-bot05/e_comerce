@@ -139,4 +139,13 @@ public class OrderServiceImplementation implements OrderService {
         orderRepository.deleteById(orderId);
 
     }
+
+    @Override
+    public Order confirmedOrder(Long orderId) throws OrderException {
+        Order order=findOrderById(orderId);
+        order.setOrderStatus(String.valueOf(OrderStatus.CONFIRMED));
+
+
+        return orderRepository.save(order);
+    }
 }

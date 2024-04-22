@@ -27,9 +27,10 @@ public class Category {
             strategy = GenerationType.AUTO
     )
     private Long id;
-    private @NotNull @Size(
-            max = 50
-    ) String name;
+//    private @NotNull @Size(
+//            max = 50
+//    )
+    String name;
     @ManyToOne(
             fetch = FetchType.EAGER
     )
