@@ -40,7 +40,7 @@ public class PaymentController {
             RazorpayClient razorpay=new RazorpayClient(apiKey, apiSecret);
 
             JSONObject paymentLinkRequest=new JSONObject();
-            paymentLinkRequest.put("amount",order.getTotalPrice());
+            paymentLinkRequest.put("amount",order.getTotalPrice()*100);
             paymentLinkRequest.put("currency","INR");
 
             JSONObject customer=new JSONObject();
@@ -73,7 +73,6 @@ public class PaymentController {
 
     }
 
-    @GetMapping("/payments")
     public ResponseEntity<ApiResponse>redirect(@RequestParam(name = "payment_id")String paymentId,@RequestParam(name="order_id")Long orderId) throws OrderException, RazorpayException {
         Order order=orderService.findOrderById(orderId);
         RazorpayClient razorpay=new RazorpayClient(apiKey,apiSecret);
