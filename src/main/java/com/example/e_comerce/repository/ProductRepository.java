@@ -35,8 +35,17 @@ List<Product> filterProducts(@Param("category") String category,
     List<Product> searchProduct(@Param("query") String query);
 
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.category.name) = LOWER(:category)")
+    @Query("SELECT p FROM Product p " +
+            "WHERE LOWER(p.category.name) = :category " +
+            "OR LOWER(p.category.parentCategory.name) = :category " +
+            "OR LOWER(p.category.parentCategory.parentCategory.name) = :category")
     List<Product> findByCategory(@Param("category") String category);
+
+
+    @Query("SELECT p FROM Product p WHERE p.category.id IN :categoryIds")
+    List<Product> findByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
+
+
 
 
 

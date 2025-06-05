@@ -58,7 +58,7 @@ public class ProductServiceImplementation implements  ProductService{
         }
 
         // Find or create third-level category under secondLevel
-        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
+        Category thirdLevel     = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
         if (thirdLevel == null) {
             thirdLevel = new Category();
             thirdLevel.setName(req.getThirdLevelCategory());
@@ -165,8 +165,49 @@ public class ProductServiceImplementation implements  ProductService{
 
     @Override
     public List<Product> searchProduct(String query) {
-        return productRepository.searchProduct(query.toLowerCase());
+        query = query.toLowerCase();
+
+        // 1. Textual search
+        List<Product> textMatchedProducts = productRepository.searchProduct(query);
+
+        // 2. Category-based search
+        Category category = categoryRepository.findByName(query);
+        List<Product> categoryMatchedProducts = List.of();
+
+        if (category != null) {
+            // get all descendant categories
+            List<Category> allCategories = categoryRepository.findAll();
+            List<Long> categoryIds = allCategories.stream()
+                    .filter(c -> isDescendantOf(c, category))
+                    .map(Category::getId)
+                    .collect(Collectors.toList());
+
+            categoryIds.add(category.getId()); // include the searched category itself
+            categoryMatchedProducts = productRepository.findByCategoryIds(categoryIds);
+        }
+
+        // Combine and remove duplicates
+        List<Product> all = textMatchedProducts;
+        for (Product p : categoryMatchedProducts) {
+            if (!all.contains(p)) {
+                all.add(p);
+            }
+        }
+
+        return all;
     }
+
+    private boolean isDescendantOf(Category child, Category parent) {
+        while (child.getParentCategory() != null) {
+            if (child.getParentCategory().getId().equals(parent.getId())) {
+                return true;
+            }
+            child = child.getParentCategory();
+        }
+        return false;
+    }
+
+
 
     @Override
     public List<Product> findProductByCategory(String category) {
