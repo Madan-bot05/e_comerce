@@ -64,7 +64,8 @@ public class OrderServiceImplementation implements OrderService {
         createdOrder.getPaymentDetails().setStatus(String.valueOf(PaymentStatus.PENDING));
         createdOrder.setCreatedAt(LocalDateTime.now());
 
-        Order savedOrder=orderRepository.save(createdOrder);
+
+       Order savedOrder=orderRepository.save(createdOrder);
 
         for(OrderItem item:orderItems) {
             item.setOrder(savedOrder);

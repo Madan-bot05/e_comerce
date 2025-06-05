@@ -6,6 +6,7 @@ import com.example.e_comerce.model.Product;
 import com.example.e_comerce.repository.CategoryRepository;
 import com.example.e_comerce.repository.ProductRepository;
 import com.example.e_comerce.request.CreateProductRequest;
+import com.example.e_comerce.response.ProductResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,132 +36,92 @@ public class ProductServiceImplementation implements  ProductService{
     }
 
     @Override
-    public Product createProduct(CreateProductRequest req) {
+    public ProductResponse createProduct(CreateProductRequest req) {
 
-//        1st level
-//        Category topLevel=categoryRepository.findByName(req.getTopLevelCategory());
-//
-//        if(topLevel==null) {
-//
-//            Category topLavelCategory=new Category();
-//            topLavelCategory.setName(req.getTopLevelCategory());
-//            topLavelCategory.setLevel(1);
-//
-//            topLevel= categoryRepository.save(topLavelCategory);
-//        }
-//
-//        Category secondLevel=categoryRepository.
-//                findByNameAndParent(req.getSecondLevelCategory(),topLevel.getName());
-//        if(secondLevel==null) {
-//
-//            Category secondLavelCategory=new Category();
-//            secondLavelCategory.setName(req.getSecondLevelCategory());
-//            secondLavelCategory.setParentCategory(topLevel);
-//            secondLavelCategory.setLevel(2);
-//
-//            secondLevel= categoryRepository.save(secondLavelCategory);
-//        }
-//
-//        Category thirdLevel=categoryRepository.findByNameAndParent(req.getThirdLevelCategory(),secondLevel.getName());
-//        if(thirdLevel==null) {
-//
-//            Category thirdLavelCategory=new Category();
-//            thirdLavelCategory.setName(req.getThirdLevelCategory());
-//            thirdLavelCategory.setParentCategory(secondLevel);
-//            thirdLavelCategory.setLevel(3);
-//
-//            thirdLevel=categoryRepository.save(thirdLavelCategory);
-//        }
-
-
-
-
-//        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
-//        if (topLevel == null) {
-//            topLevel = new Category();
-//            topLevel.setName(req.getTopLevelCategory());
-//            topLevel.setLevel(1);
-//
-//            topLevel = categoryRepository.save(topLevel);
-//        }
-//
-//        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), String.valueOf(topLevel));
-//        if (secondLevel == null) {
-//            secondLevel = new Category();
-//            secondLevel.setName(req.getSecondLevelCategory());
-//            secondLevel.setParentCategory(topLevel);
-//            secondLevel.setLevel(2);
-//
-//            secondLevel = categoryRepository.save(secondLevel);
-//        }
-//
-//        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), String.valueOf(secondLevel));
-//        if (thirdLevel == null) {
-//            thirdLevel = new Category();
-//            thirdLevel.setName(req.getThirdLevelCategory());
-//            thirdLevel.setParentCategory(secondLevel);
-//            thirdLevel.setLevel(3);
-//
-//            thirdLevel = categoryRepository.save(thirdLevel);
-//        }
-
-        Category topLevel = this.categoryRepository.findByName(req.getTopLevelCategory());
-        Category secondLevel;
+        // Find or create top-level category
+        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
         if (topLevel == null) {
-            secondLevel = new Category();
-            secondLevel.setName(req.getTopLevelCategory());
-            secondLevel.setLevel(1);
-            topLevel = (Category)this.categoryRepository.save(secondLevel);
+            topLevel = new Category();
+            topLevel.setName(req.getTopLevelCategory());
+            topLevel.setLevel(1);
+            topLevel = categoryRepository.save(topLevel);
         }
 
-        secondLevel = this.categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
-        Category thirdLevel;
+        // Find or create second-level category under topLevel
+        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
         if (secondLevel == null) {
-            thirdLevel = new Category();
-            thirdLevel.setName(req.getSecondLevelCategory());
-            thirdLevel.setParentCategory(topLevel);
-            thirdLevel.setLevel(2);
-            secondLevel = (Category)this.categoryRepository.save(thirdLevel);
+            secondLevel = new Category();
+            secondLevel.setName(req.getSecondLevelCategory());
+            secondLevel.setParentCategory(topLevel);
+            secondLevel.setLevel(2);
+            secondLevel = categoryRepository.save(secondLevel);
         }
 
-        thirdLevel = this.categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
+        // Find or create third-level category under secondLevel
+        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
         if (thirdLevel == null) {
-            Category thirdLavelCategory = new Category();
-            thirdLavelCategory.setName(req.getThirdLevelCategory());
-            thirdLavelCategory.setParentCategory(secondLevel);
-            thirdLavelCategory.setLevel(3);
-            thirdLevel = (Category)this.categoryRepository.save(thirdLavelCategory);
+            thirdLevel = new Category();
+            thirdLevel.setName(req.getThirdLevelCategory());
+            thirdLevel.setParentCategory(secondLevel);
+            thirdLevel.setLevel(3);
+            thirdLevel = categoryRepository.save(thirdLevel);
         }
 
-
-        Product product=new Product();
+        // Create product entity and set properties from request
+        Product product = new Product();
         product.setTitle(req.getTitle());
         product.setDescription(req.getDescription());
         product.setPrice(req.getPrice());
-        product.setDiscountedPrice(req.getDicountedPrice());
-        product.setDiscountedPercent(req.getDicountPercent());
+        product.setDiscountedPrice(req.getDicountedPrice());   // note the field name typo here
+        product.setDiscountedPercent(req.getDicountPercent()); // same typo here
         product.setBrand(req.getBrand());
         product.setColor(req.getColor());
         product.setSizes(req.getSize());
         product.setImageUrl(req.getImageUrl());
         product.setQuantity(req.getQuantity());
-//        product.setCategory( req.getTopLevelCategory());
-//        product.setCategory(req.getSecondLevelCategory());
-//        product.setCategory(req.getThirdLevelCategory());
-//        product.setCategory( thirdLevel);
-//        product.setCategory(String.valueOf(topLevel)); // Set the top level category
-//        product.setCategory(String.valueOf(secondLevel)); // Set the second level category
-//        product.setCategory(String.valueOf(thirdLevel)); // Set the third level category
-
+        product.setCategory(thirdLevel);  // associate product with third-level category
         product.setCreatedAt(LocalDateTime.now());
 
+        // Save the product
+        Product savedProduct = productRepository.save(product);
 
-
-//        Product savedProduct=productRepository.save(product);
-        Product savedProduct = (Product) this.productRepository.save(product);
-        System.out.println("products - "+product);
-        return  savedProduct;
+        // Map entity to response DTO and return
+        return mapToProductResponse(savedProduct);
     }
+
+
+    private ProductResponse mapToProductResponse(Product product) {
+        ProductResponse response = new ProductResponse();
+        response.setId(product.getId());
+        response.setTitle(product.getTitle());
+        response.setDescription(product.getDescription());
+        response.setPrice(product.getPrice());
+        response.setDiscountedPrice(product.getDiscountedPrice());
+        response.setDiscountedPercent(product.getDiscountedPercent());
+        response.setBrand(product.getBrand());
+        response.setColor(product.getColor());
+        response.setSizes(product.getSizes());
+        response.setImageUrl(product.getImageUrl());
+        response.setQuantity(product.getQuantity());
+        response.setCreatedAt(product.getCreatedAt());
+
+        // Extract category levels
+        Category third = product.getCategory();
+        if (third != null) {
+            response.setThirdLevelCategory(third.getName());
+            Category second = third.getParentCategory();
+            if (second != null) {
+                response.setSecondLevelCategory(second.getName());
+                Category first = second.getParentCategory();
+                if (first != null) {
+                    response.setTopLevelCategory(first.getName());
+                }
+            }
+        }
+
+        return response;
+    }
+
 
 
     @Override
@@ -204,20 +165,19 @@ public class ProductServiceImplementation implements  ProductService{
 
     @Override
     public List<Product> searchProduct(String query) {
-        return null;
+        return productRepository.searchProduct(query.toLowerCase());
     }
 
     @Override
     public List<Product> findProductByCategory(String category) {
-        return null;
-
+        return productRepository.findByCategory(category.toLowerCase());
     }
 
     @Override
     public Page<Product> getAllProduct(String category, List<String> colors, List<String> sizes, Integer minPrice, Integer maxPrice, Integer minDiscount, String sort, String stock, Integer pageNumber, Integer pageSize) {
         Pageable pageable= PageRequest.of(pageNumber,pageSize);
 
-        List<Product> products=productRepository.filterProducts(category,minPrice,maxPrice, String.valueOf(minDiscount),sort);
+        List<Product> products=productRepository.filterProducts(category,minPrice,maxPrice, Integer.valueOf(String.valueOf(minDiscount)),sort);
         if (!colors.isEmpty()){
             products=products.stream().filter(p-> colors.stream().anyMatch(c->c.equalsIgnoreCase(p.getColor())))
                     .collect(Collectors.toList());

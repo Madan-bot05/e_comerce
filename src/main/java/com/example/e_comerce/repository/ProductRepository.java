@@ -18,19 +18,26 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 //            "CASE WHEN :sort='price_low'  THEN p.discountedPrice  END ASC ,"+
 //            "CASE WHEN :sort='price_high'  THEN p.discountedPrice  END DESC "
 //    )
-    @Query("SELECT p FROM Product p WHERE (p.category.name = :category OR :category = '') AND ((:minPrice IS NULL AND :maxPrice IS NULL) OR (p.discountedPrice BETWEEN :minPrice AND :maxPrice)) AND (:minDiscount IS NULL OR p.discountedPercent >= :minDiscount) ORDER BY CASE WHEN :sort = 'price_low' THEN p.discountedPrice END ASC, CASE WHEN :sort = 'price_high' THEN p.discountedPrice END DESC, p.createdAt DESC")
-    public List<Product>filterProducts(@Param("category") String category,
-                                       @Param("minPrice") Integer minPrice,
-                                       @Param("minPrice") Integer minDiscount,
-                                       @Param("minDiscount")String maxPrice,
-                                       @Param("sort")String sort);
+@Query("SELECT p FROM Product p WHERE (p.category.name = :category OR :category = '') " +
+        "AND ((:minPrice IS NULL AND :maxPrice IS NULL) OR (p.discountedPrice BETWEEN :minPrice AND :maxPrice)) " +
+        "AND (:minDiscount IS NULL OR p.discountedPercent >= :minDiscount) " +
+        "ORDER BY CASE WHEN :sort = 'price_low' THEN p.discountedPrice END ASC, " +
+        "CASE WHEN :sort = 'price_high' THEN p.discountedPrice END DESC, p.createdAt DESC")
+List<Product> filterProducts(@Param("category") String category,
+                             @Param("minPrice") Integer minPrice,
+                             @Param("maxPrice") Integer maxPrice,
+                             @Param("minDiscount") Integer minDiscount,
+                             @Param("sort") String sort);
 
 
-    @Query("SELECT p From Product p where LOWER(p.title) Like %:query% OR LOWER(p.description) Like %:query% OR LOWER(p.brand) LIKE %:query% OR LOWER(p.category.name) LIKE %:query%")
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.title) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.description) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.brand) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.category.name) LIKE CONCAT('%', LOWER(:query), '%')")
     List<Product> searchProduct(@Param("query") String query);
 
-    @Query("SELECT p From Product p Where LOWER(p.category.name)=:category")
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.category.name) = LOWER(:category)")
     List<Product> findByCategory(@Param("category") String category);
+
 
 
     public List<Product> findTop10ByOrderByCreatedAtDesc();

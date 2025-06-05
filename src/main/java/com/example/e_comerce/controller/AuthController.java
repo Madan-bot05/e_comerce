@@ -9,6 +9,7 @@ import com.example.e_comerce.request.LoginRequest;
 import com.example.e_comerce.response.AuthResponse;
 import com.example.e_comerce.service.CartService;
 import com.example.e_comerce.service.CustomUserServiceImplementation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,19 +24,24 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthController {
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
     private CustomUserServiceImplementation customUserServiceImplementation;
+    @Autowired
     private CartService cartService;
 
-    public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, CustomUserServiceImplementation customUserServiceImplementation, CartService cartService) {
-        this.userRepository = userRepository;
-        this.jwtProvider = jwtProvider;
-        this.passwordEncoder = passwordEncoder;
-        this.customUserServiceImplementation = customUserServiceImplementation;
-        this.cartService = cartService;
-    }
+//    public AuthController(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder, CustomUserServiceImplementation customUserServiceImplementation, CartService cartService) {
+//        this.userRepository = userRepository;
+//        this.jwtProvider = jwtProvider;
+//        this.passwordEncoder = passwordEncoder;
+//        this.customUserServiceImplementation = customUserServiceImplementation;
+//        this.cartService = cartService;
+//    }
 
 
     @PostMapping("/signup")

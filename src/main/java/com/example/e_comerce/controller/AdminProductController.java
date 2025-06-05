@@ -4,6 +4,7 @@ import com.example.e_comerce.exception.ProductException;
 import com.example.e_comerce.model.Product;
 import com.example.e_comerce.request.CreateProductRequest;
 import com.example.e_comerce.response.ApiResponse;
+import com.example.e_comerce.response.ProductResponse;
 import com.example.e_comerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,11 @@ public class AdminProductController {
         this.productService = productService;
     }
     @PostMapping("/")
-    public ResponseEntity<Product> createProductHandler(@RequestBody CreateProductRequest req) throws ProductException{
-
-        Product createdProduct = productService.createProduct(req);
-
-        return new ResponseEntity<Product>(createdProduct,HttpStatus.ACCEPTED);
-
+    public ResponseEntity<ProductResponse> createProductHandler(@RequestBody CreateProductRequest req) throws ProductException {
+        ProductResponse createdProduct = productService.createProduct(req);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
+
 
     @DeleteMapping("/{productId}/delete")
     public ResponseEntity<ApiResponse> deleteProductHandler(@PathVariable Long productId) throws ProductException{

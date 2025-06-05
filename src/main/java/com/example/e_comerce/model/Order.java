@@ -28,6 +28,7 @@ public class Order {
     private List<OrderItem>orderItems=new ArrayList<>();
     private LocalDateTime orderDate;
     private LocalDateTime deliveryDate;
+
     @OneToOne
     private Address shippingAddress;
     @Embedded

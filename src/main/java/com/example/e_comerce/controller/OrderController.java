@@ -17,13 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+    @Autowired
     private OrderService orderService;
+    @Autowired
     private UserService userService;
 
-    public OrderController(OrderService orderService, UserService userService) {
-        this.orderService = orderService;
-        this.userService = userService;
-    }
+//    public OrderController(OrderService orderService, UserService userService) {
+//        this.orderService = orderService;
+//        this.userService = userService;
+//    }
     @PostMapping("/")
     public ResponseEntity<Order> createOrderHandler(@RequestBody Address spippingAddress,
                                                     @RequestHeader("Authorization")String jwt) throws UserException {

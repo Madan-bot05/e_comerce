@@ -77,4 +77,9 @@ public class CartItemServiceImplementation implements CartItemService{
         }
         throw new CartItemException("Cart Item Not Found With ID:" +cartItemId);
     }
+
+    @Override
+    public int getCartItemCount(Long userId) {
+        return cartItemRepository.countByUserId(userId);
+    }
 }

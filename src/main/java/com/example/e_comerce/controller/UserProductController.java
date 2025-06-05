@@ -54,4 +54,11 @@ public class UserProductController {
 
     }
 
+
+    @GetMapping("/category/{name}")
+    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String name) {
+        List<Product> result = productService.findProductByCategory(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }

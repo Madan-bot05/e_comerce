@@ -40,6 +40,18 @@ public class CartItemController {
         return new ResponseEntity(updatedCartItem, HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getCartItemCount(@RequestHeader("Authorization") String jwt) throws UserException {
+        // Retrieve user based on JWT token
+        User user = userService.findUserProfileByJwt(jwt);
+
+        // Get cart item count for the user
+        int cartItemCount = cartItemService.getCartItemCount(user.getId());
+
+        // Return the cart item count as response
+        return ResponseEntity.ok(cartItemCount);
+    }
+
 
 
 }

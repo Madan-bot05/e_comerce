@@ -3,12 +3,13 @@ package com.example.e_comerce.service;
 import com.example.e_comerce.exception.ProductException;
 import com.example.e_comerce.model.Product;
 import com.example.e_comerce.request.CreateProductRequest;
+import com.example.e_comerce.response.ProductResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ProductService {
-    public Product createProduct(CreateProductRequest req);
+    public ProductResponse createProduct(CreateProductRequest req);
     public String deleteProduct(Long ProductId) throws ProductException;
     public Product updateProduct(Long productId, Product req) throws ProductException;
     public Product findProductById(Long id) throws ProductException;
