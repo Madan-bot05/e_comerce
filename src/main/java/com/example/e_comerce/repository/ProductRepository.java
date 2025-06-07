@@ -31,7 +31,13 @@ List<Product> filterProducts(@Param("category") String category,
 
 
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.title) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.description) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.brand) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(p.category.name) LIKE CONCAT('%', LOWER(:query), '%')")
+    @Query("SELECT p FROM Product p WHERE " +
+            "LOWER(p.title) LIKE %:query% OR " +
+            "LOWER(p.description) LIKE %:query% OR " +
+            "LOWER(p.brand) LIKE %:query% OR " +
+            "LOWER(p.category.name) LIKE %:query% OR " +
+            "LOWER(p.category.parentCategory.name) LIKE %:query% OR " +
+            "LOWER(p.category.parentCategory.parentCategory.name) LIKE %:query%")
     List<Product> searchProduct(@Param("query") String query);
 
 
@@ -40,6 +46,7 @@ List<Product> filterProducts(@Param("category") String category,
             "OR LOWER(p.category.parentCategory.name) = :category " +
             "OR LOWER(p.category.parentCategory.parentCategory.name) = :category")
     List<Product> findByCategory(@Param("category") String category);
+
 
 
     @Query("SELECT p FROM Product p WHERE p.category.id IN :categoryIds")

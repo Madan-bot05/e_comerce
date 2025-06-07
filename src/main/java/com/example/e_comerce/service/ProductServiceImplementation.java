@@ -15,8 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -38,8 +37,8 @@ public class ProductServiceImplementation implements  ProductService{
     @Override
     public ProductResponse createProduct(CreateProductRequest req) {
 
-        // Find or create top-level category
-        Category topLevel = categoryRepository.findByName(req.getTopLevelCategory());
+// Find or create top-level category
+        Category topLevel = (Category) categoryRepository.findByNameIgnoreCase(req.getTopLevelCategory());
         if (topLevel == null) {
             topLevel = new Category();
             topLevel.setName(req.getTopLevelCategory());
@@ -47,25 +46,26 @@ public class ProductServiceImplementation implements  ProductService{
             topLevel = categoryRepository.save(topLevel);
         }
 
-        // Find or create second-level category under topLevel
-        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel.getName());
+// Find or create second-level category under topLevel
+        Category secondLevel = categoryRepository.findByNameAndParent(req.getSecondLevelCategory(), topLevel);
         if (secondLevel == null) {
             secondLevel = new Category();
             secondLevel.setName(req.getSecondLevelCategory());
-            secondLevel.setParentCategory(topLevel);
+            secondLevel.setParentCategory(topLevel); // associate parent
             secondLevel.setLevel(2);
             secondLevel = categoryRepository.save(secondLevel);
         }
 
-        // Find or create third-level category under secondLevel
-        Category thirdLevel     = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel.getName());
+// Find or create third-level category under secondLevel
+        Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLevelCategory(), secondLevel);
         if (thirdLevel == null) {
             thirdLevel = new Category();
             thirdLevel.setName(req.getThirdLevelCategory());
-            thirdLevel.setParentCategory(secondLevel);
+            thirdLevel.setParentCategory(secondLevel); // associate parent
             thirdLevel.setLevel(3);
             thirdLevel = categoryRepository.save(thirdLevel);
         }
+
 
         // Create product entity and set properties from request
         Product product = new Product();
@@ -167,45 +167,45 @@ public class ProductServiceImplementation implements  ProductService{
     public List<Product> searchProduct(String query) {
         query = query.toLowerCase();
 
-        // 1. Textual search
+        // 1. Text search: title, description, brand, direct category name, etc.
         List<Product> textMatchedProducts = productRepository.searchProduct(query);
 
-        // 2. Category-based search
-        Category category = categoryRepository.findByName(query);
-        List<Product> categoryMatchedProducts = List.of();
+        // 2. Match by category names (could be multiple with same name)
+        List<Category> categories = categoryRepository.findByNameIgnoreCase(query);
+        Set<Product> categoryMatchedProducts = new HashSet<>();
 
-        if (category != null) {
-            // get all descendant categories
+        if (!categories.isEmpty()) {
             List<Category> allCategories = categoryRepository.findAll();
-            List<Long> categoryIds = allCategories.stream()
-                    .filter(c -> isDescendantOf(c, category))
-                    .map(Category::getId)
-                    .collect(Collectors.toList());
 
-            categoryIds.add(category.getId()); // include the searched category itself
-            categoryMatchedProducts = productRepository.findByCategoryIds(categoryIds);
-        }
+            for (Category category : categories) {
+                // collect IDs of matching category and all descendants
+                List<Long> categoryIds = allCategories.stream()
+                        .filter(c -> isDescendantOf(c, category) || c.getId().equals(category.getId()))
+                        .map(Category::getId)
+                        .collect(Collectors.toList());
 
-        // Combine and remove duplicates
-        List<Product> all = textMatchedProducts;
-        for (Product p : categoryMatchedProducts) {
-            if (!all.contains(p)) {
-                all.add(p);
+                if (!categoryIds.isEmpty()) {
+                    categoryMatchedProducts.addAll(productRepository.findByCategoryIds(categoryIds));
+                }
             }
         }
 
-        return all;
+        // Combine both sets, remove duplicates
+        Set<Product> finalResults = new HashSet<>(textMatchedProducts);
+        finalResults.addAll(categoryMatchedProducts);
+
+        return new ArrayList<>(finalResults);
     }
+
 
     private boolean isDescendantOf(Category child, Category parent) {
         while (child.getParentCategory() != null) {
-            if (child.getParentCategory().getId().equals(parent.getId())) {
-                return true;
-            }
+            if (child.getParentCategory().getId().equals(parent.getId())) return true;
             child = child.getParentCategory();
         }
         return false;
     }
+
 
 
 
