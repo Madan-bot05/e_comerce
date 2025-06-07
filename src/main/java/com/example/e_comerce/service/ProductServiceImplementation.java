@@ -38,7 +38,9 @@ public class ProductServiceImplementation implements  ProductService{
     public ProductResponse createProduct(CreateProductRequest req) {
 
 // Find or create top-level category
-        Category topLevel = (Category) categoryRepository.findByNameIgnoreCase(req.getTopLevelCategory());
+        List<Category> topLevelList = categoryRepository.findByNameIgnoreCase(req.getTopLevelCategory());
+        Category topLevel = topLevelList.isEmpty() ? null : topLevelList.get(0);
+
         if (topLevel == null) {
             topLevel = new Category();
             topLevel.setName(req.getTopLevelCategory());
